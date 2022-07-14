@@ -3,13 +3,13 @@
 // 根据航班查找
 void Flights_Search(Flights *flights_p, int type)
 {
-    int i, list[flights_p->length], pos = 0;
+    int list[flights_p->length], pos = 0;
     if (type == NO)
     {
         char input_no[10];
         printf(" -> 请输入要查询的航班号：");
         scanf("%s", &input_no);
-        for (i = 0; i < flights_p->length; i++)
+        for (int i = 0; i < flights_p->length; i++)
             if (strcmp(flights_p->flights[i].no, input_no) == 0)
             {
                 list[pos] = i;
@@ -37,46 +37,39 @@ void Flights_Search(Flights *flights_p, int type)
         return;
     }
     if (pos == 0)
-    {
         printf("不存在相关航班！\n");
-    }
     else
+    {
+        printf("为您找到以下航班：\n");
         Print_Flights(flights_p, list, pos);
+    }
 }
 
-// 查找订单&菜单
+// 查找订单
 void Orders_Search(Orders *orders_p)
 {
-    int i;
+    int i, list[orders_p->length], pos = 0;
     char input_id[20];
     if (orders_p->length == 0)
     {
-        printf("当前订票人数为0,无法查询!\n");
+        printf("当前订票人数为0，无法查询！\n");
         return;
     }
     printf("请输入证件号：");
     scanf("%s", input_id);
     for (i = 0; i < orders_p->length; i++)
         if (strcmp(orders_p->orders[i].card_id, input_id) == 0)
-            break;
-    if (i == orders_p->length)
-        printf("不存在该客户!\n");
+        {
+            list[pos] = i;
+            pos++;
+        }
+    if (pos == 0)
+        printf("不存在相关订单，请仔细核对！\n");
     else
-        printf("该客户信息如下:\n\
-订票时间：%s\n\n\
-订单号：%d\n\n\
-航班ID：%d\n\n\
-联系电话：%d\n\n\
-乘客姓名：%s\n\n\
-乘客类型：%s\n\n\
-证件号码：%s\n\n",
-               orders_p->orders[i].date,
-               orders_p->orders[i].id,
-               orders_p->orders[i].flight_id,
-               orders_p->orders[i].phone,
-               orders_p->orders[i].name,
-               orders_p->orders[i].type,
-               orders_p->orders[i].card_id);
+    {
+        Print_Orders(orders_p, list, pos);
+        printf("为您找到以下订单：\n");
+    }
 }
 
 // 【主要】主搜索菜单
@@ -108,34 +101,28 @@ void Search(Flights *flights_p, Orders *orders_p)
 }
 
 // 推荐航班
-void Recommend(Flights *flights_p, int i)
+void Recommend(Flights *flights_p, int num)
 {
-    printf("抱歉，该航班已无空余座位\n");
-    for (int j = 0; j < flights_p->length; j++)
-        if ((strcmp(flights_p->flights[i].dep_city, flights_p->flights[j].dep_city) == 0) &&
-            (j != i) &&
-            (flights_p->flights[j].remain != 0))
+    int list[flights_p->length], pos = 0;
+    printf("抱歉，该航班已无空余座位。");
+    for (int i = 0; i < flights_p->length; i++)
+        if ((strcmp(flights_p->flights[num].dep_city, flights_p->flights[i].dep_city) == 0) &&
+            (strcmp(flights_p->flights[num].arr_city, flights_p->flights[i].arr_city) == 0) &&
+            (i != num) &&
+            (flights_p->flights[i].remain != 0))
         {
-            printf("您可选择该相似航班：\n\
-航班号：%s\n\
-出发城市：%s\n\
-到达城市：%s\n\
-出发日期：%s\n\
-出发时间：%s\n\
-到达时间：%s\n\
-票价：%d\n\
-剩余票数：%d\n\
-航空公司：%s\n",
-                   flights_p->flights[i].no,
-                   flights_p->flights[i].dep_city,
-                   flights_p->flights[i].arr_city,
-                   flights_p->flights[i].date,
-                   flights_p->flights[i].dep_time,
-                   flights_p->flights[i].arr_time,
-                   flights_p->flights[i].price,
-                   flights_p->flights[i].remain,
-                   flights_p->flights[i].carrier);
+            list[pos] = i;
+            pos++;
         }
+    if (pos == 0)
+    {
+        printf("请选择其他航班。\n");
+    }
+    else
+    {
+        printf("为您找到以下航班：\n");
+        Print_Flights(flights_p, list, pos);
+    }
 }
 
 // 填写订单信息&存储
@@ -229,4 +216,31 @@ void Withdraw(Flights *flights_p, Orders *orders_p)
     Open_Flights(flights_p, WRITE);
     Open_Orders(orders_p, WRITE);
     printf("退票成功！\n");
+}
+
+// 【主要】反馈菜单
+void Feedback(Feedbacks *feedbacks_p)
+{
+    // date
+    time_t cur_time = time(NULL);
+    strftime(
+        feedbacks_p->feedbacks[feedbacks_p->length].date,
+        sizeof(feedbacks_p->feedbacks[feedbacks_p->length].date),
+        "%Y-%m-%d",
+        localtime(&cur_time));
+    // name
+    printf("您的姓名：");
+    scanf("%s", feedbacks_p->feedbacks[feedbacks_p->length].name);
+    // contact
+    printf("您的联系方式（邮箱/电话号码）：");
+    scanf("%s", feedbacks_p->feedbacks[feedbacks_p->length].contact);
+    // no
+    printf("您所乘坐的航班：");
+    scanf("%s", feedbacks_p->feedbacks[feedbacks_p->length].no);
+    // content
+    printf("您的反馈内容：");
+    scanf("%s", feedbacks_p->feedbacks[feedbacks_p->length].content);
+    feedbacks_p->length++;
+    Open_Feedbacks(feedbacks_p, WRITE);
+    printf("感谢您的反馈！您的反馈会成为我们持续服务和提升质量的持续动力。\n");
 }

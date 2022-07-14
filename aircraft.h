@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define m 40
-#define n 100
+#include <conio.h>
+#define FLIGHTS 40
+#define ORDERS 100
+#define MOVE 1 // 偏移量
 enum way_of_open
 {
     READ,
@@ -13,6 +15,16 @@ enum way_of_find
 {
     NO = 1,
     CITY
+};
+enum way_of_modify
+{
+    EDIT,
+    CANCEL
+};
+enum is_passed
+{
+    PASSED,
+    FAILED
 };
 
 // 航班信息结构体
@@ -32,7 +44,7 @@ typedef struct
 
 typedef struct
 {
-    Flight_Info flights[m];
+    Flight_Info flights[FLIGHTS];
     int length;
 } Flights;
 
@@ -50,14 +62,33 @@ typedef struct
 
 typedef struct
 {
-    Order_Info orders[n];
+    Order_Info orders[ORDERS];
     int length;
 } Orders;
+
+// 反馈信息结构体
+typedef struct
+{
+    char date[11];
+    char name[10];
+    char contact[30];
+    char no[11];
+    char content[100];
+} Feedback_Info;
+
+typedef struct
+{
+    Feedback_Info feedbacks[ORDERS];
+    int length;
+} Feedbacks;
 
 // 文件/屏幕打印操作相关（operation.c）
 void Open_Flights(Flights *flights_p, int type);
 void Open_Orders(Orders *orders_p, int type);
+void Open_Feedbacks(Feedbacks *feedbacks_p, int type);
 void Print_Flights(Flights *flights_p, int *list, int length);
+void Print_Orders(Orders *orders_p, int *list, int length);
+void Print_Feedbacks(Feedbacks *feedbacks_p);
 
 // 飞机订单相关（aircraft.c）
 void Flights_Search(Flights *flights_p, int type);
@@ -68,3 +99,11 @@ void Recommend(Flights *flights_p, int i);
 void Pay(Flights *flights_p, Orders *orders_p, int i);
 void Reserve(Flights *flights_p, Orders *orders_p);
 void Withdraw(Flights *flights_p, Orders *orders_p);
+
+void Feedback(Feedbacks *feedbacks_p);
+
+// 数据管理调整（management.c）
+void Add_Flight(Flights *flights_p);
+void Modify_Flight(Flights *flights_p, int type);
+int Admin_Login();
+void Adjust(Flights *flights_p, Feedbacks *feedbacks_p);
