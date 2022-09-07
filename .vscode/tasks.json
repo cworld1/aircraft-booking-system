@@ -8,7 +8,9 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
-                // "${fileDirname}\\AircraftBook.c",
+                "${fileDirname}\\operation.c",
+                "${fileDirname}\\aircraft.c",
+                "${fileDirname}\\management.c",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
