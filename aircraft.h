@@ -95,14 +95,14 @@ void Flights_Search(Flights *flights_p, int type);
 void Orders_Search(Orders *orders_p);
 void Search(Flights *flights_p, Orders *orders_p);
 
-void Recommend(Flights *flights_p, int i);
-void Pay(Flights *flights_p, Orders *orders_p, int i);
+void Recommend(Flights *flights_p, int num);
+void Pay(Flights *flights_p, Orders *orders_p, int num);
 void Reserve(Flights *flights_p, Orders *orders_p);
 void Withdraw(Flights *flights_p, Orders *orders_p);
 
 void Feedback(Feedbacks *feedbacks_p);
 
-// 数据管理调整（management.c）
+// 数据管理调整相关（management.c）
 void Add_Flight(Flights *flights_p);
 void Modify_Flight(Flights *flights_p, int type);
 int Admin_Login();
