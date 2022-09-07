@@ -1,13 +1,13 @@
 #include "aircraft.h"
 
-// 根据航班查找
+// 查找航班
 void Flights_Search(Flights *flights_p, int type)
 {
     int list[flights_p->length], pos = 0;
     if (type == NO)
     {
         char input_no[10];
-        printf(" -> 请输入要查询的航班号：");
+        printf("├-> 请输入要查询的航班号：");
         scanf("%s", &input_no);
         for (int i = 0; i < flights_p->length; i++)
             if (strcmp(flights_p->flights[i].no, input_no) == 0)
@@ -25,7 +25,7 @@ void Flights_Search(Flights *flights_p, int type)
         scanf("%s", input_arr);
         for (int i = 0; i < flights_p->length; i++)
             if (strcmp(flights_p->flights[i].dep_city, input_dep) == 0 &&
-                strcmp(flights_p->flights[i].dep_city, input_arr) == 0)
+                strcmp(flights_p->flights[i].arr_city, input_arr) == 0)
             {
                 list[pos] = i;
                 pos++;
@@ -67,8 +67,8 @@ void Orders_Search(Orders *orders_p)
         printf("不存在相关订单，请仔细核对！\n");
     else
     {
-        Print_Orders(orders_p, list, pos);
         printf("为您找到以下订单：\n");
+        Print_Orders(orders_p, list, pos);
     }
 }
 
@@ -76,19 +76,19 @@ void Orders_Search(Orders *orders_p)
 void Search(Flights *flights_p, Orders *orders_p)
 {
     int input_key;
-    printf("| 1.航班信息             |\n");
-    printf("| 2.订票信息             |\n");
-    printf(" -> 请选择查询对象：");
+    printf("│ 1.航班信息             │\n");
+    printf("│ 2.订票信息             │\n");
+    printf("├-> 请选择查询对象：");
     scanf("%d", &input_key);
     switch (input_key)
     {
     case 1:;
         int input_key2;
-        printf("| 1.按航班号查询         |\n");
-        printf("| 2.按起降城市查询       |\n");
-        printf(" -> 请选择查询方式：");
+        printf("│ 1.按航班号查询         │\n");
+        printf("│ 2.按起降城市查询       │\n");
+        printf("├-> 请选择查询方式：");
         scanf("%d", &input_key2);
-        printf(" ------------------------\n");
+        printf("└────────────────────────┘\n");
         Flights_Search(flights_p, input_key2);
         break;
     case 2:
@@ -115,9 +115,8 @@ void Recommend(Flights *flights_p, int num)
             pos++;
         }
     if (pos == 0)
-    {
+
         printf("请选择其他航班。\n");
-    }
     else
     {
         printf("为您找到以下航班：\n");
@@ -126,7 +125,7 @@ void Recommend(Flights *flights_p, int num)
 }
 
 // 填写订单信息&存储
-void Pay(Flights *flights_p, Orders *orders_p, int i)
+void Pay(Flights *flights_p, Orders *orders_p, int num)
 {
     printf("请输入客户信息\n");
     // date
@@ -140,7 +139,7 @@ void Pay(Flights *flights_p, Orders *orders_p, int i)
     srand((unsigned)time(NULL));
     orders_p->orders[orders_p->length].id = rand() * 787;
     // flight_id
-    orders_p->orders[orders_p->length].flight_id = flights_p->flights[i].flight_id;
+    orders_p->orders[orders_p->length].flight_id = flights_p->flights[num].flight_id;
     // phone
     printf("联系电话：");
     scanf("%s", orders_p->orders[orders_p->length].phone);
@@ -148,14 +147,16 @@ void Pay(Flights *flights_p, Orders *orders_p, int i)
     printf("乘客姓名：");
     scanf("%s", orders_p->orders[orders_p->length].name);
     // type
-    printf("乘客类型（成年/儿童）；");
+    printf("乘客类型（成年/儿童）：");
     scanf("%s", orders_p->orders[orders_p->length].type);
     // card_id
     printf("证件号码：");
     scanf("%s", orders_p->orders[orders_p->length].card_id);
 
-    printf("您应支付票价%d元\n", flights_p->flights[i].price);
-    flights_p->flights[i].remain--;
+    printf("您应支付票价 %6.2f 元\n",
+           flights_p->flights[num].price *
+               (strcmp(orders_p->orders[orders_p->length].type, "成年") == 0 ? 1.0 : 0.5));
+    flights_p->flights[num].remain--;
     orders_p->length++;
 
     Open_Flights(flights_p, WRITE);
@@ -168,7 +169,7 @@ void Reserve(Flights *flights_p, Orders *orders_p)
 {
     int i;
     int input_id;
-    printf("请输入要预定班机的航班ID：");
+    printf("├-> 请输入要预定航班ID：");
     scanf("%d", &input_id);
     for (i = 0; i < flights_p->length; i++)
         if (flights_p->flights[i].flight_id == input_id)
@@ -187,15 +188,14 @@ void Reserve(Flights *flights_p, Orders *orders_p)
 // 【主要】退票菜单
 void Withdraw(Flights *flights_p, Orders *orders_p)
 {
-    FILE *fp1, *fp2;
     int k, i;
-    char temp[20];
+    char temp[20], input_confirm;
     if (orders_p->length == 0)
     {
-        printf("操作错误！\n");
+        printf("系统内购票数为0，无法退票！\n");
         return;
     }
-    printf("请输入客户证件号\n");
+    printf("├-> 请输入客户证件号：");
     scanf("%s", temp);
     for (k = 0; k < orders_p->length; k++)
         if (strcmp(temp, orders_p->orders[k].card_id) == 0)
@@ -203,6 +203,14 @@ void Withdraw(Flights *flights_p, Orders *orders_p)
     if (k == orders_p->length)
     {
         printf("该客户不存在！\n");
+        return;
+    }
+    printf("找到相关信息，是否退订(y/n)：");
+    getchar();
+    scanf("%c", &input_confirm);
+    if (input_confirm != 'y')
+    {
+        printf("退票取消。");
         return;
     }
     for (i = 0; i < flights_p->length; i++)

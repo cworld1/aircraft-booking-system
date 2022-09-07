@@ -13,7 +13,7 @@ void Open_Flights(Flights *flights_p, int type)
     }
     if (type == READ)
     {
-        printf("-> 正在加载航班信息...\n");
+        printf("正在加载航班信息...\n");
         fscanf(fp, "%d", &(flights_p->length));
         for (int i = 0; i < flights_p->length; i++)
             fscanf(fp, "%d %s %s %s %s %s %s %d %d %s",
@@ -30,7 +30,7 @@ void Open_Flights(Flights *flights_p, int type)
     }
     else
     {
-        printf("-> 正在同步航班信息...\n");
+        printf("正在同步航班信息...\n");
         fprintf(fp, "%d\n", flights_p->length);
         for (int i = 0; i < flights_p->length; i++)
             fprintf(fp, "%d %s %s %s %s %s %s %d %d %s\n",
@@ -73,7 +73,7 @@ void Open_Orders(Orders *orders_p, int type)
     }
     if (type == READ)
     {
-        printf("-> 正在加载订单信息...\n");
+        printf("正在加载订单信息...\n");
         fscanf(fp, "%d", &(orders_p->length));
         for (int i = 0; i < orders_p->length; i++)
             fscanf(fp, "%s %d %d %s %s %s %s",
@@ -87,7 +87,7 @@ void Open_Orders(Orders *orders_p, int type)
     }
     else
     {
-        printf("-> 正在读取订单信息...\n");
+        printf("正在读取订单信息...\n");
         fprintf(fp, "%d\n", orders_p->length);
         if (orders_p->length == 0)
             return;
@@ -127,7 +127,7 @@ void Open_Feedbacks(Feedbacks *feedbacks_p, int type)
     }
     if (type == READ)
     {
-        printf("-> 正在加载反馈信息...\n");
+        printf("正在加载反馈信息...\n");
         fscanf(fp, "%d", &(feedbacks_p->length));
         for (int i = 0; i < feedbacks_p->length; i++)
             fscanf(fp, "%s %s %s %s %s",
@@ -139,7 +139,7 @@ void Open_Feedbacks(Feedbacks *feedbacks_p, int type)
     }
     else
     {
-        printf("-> 正在同步反馈信息...\n");
+        printf("正在同步反馈信息...\n");
         fprintf(fp, "%d\n", feedbacks_p->length);
         for (int i = 0; i < feedbacks_p->length; i++)
             fprintf(fp, "%s %s %s %s %s\n",
@@ -163,10 +163,11 @@ void Open_Feedbacks(Feedbacks *feedbacks_p, int type)
 // 打印航班信息列表
 void Print_Flights(Flights *flights_p, int *list, int length)
 {
-    printf("|航班ID|航班号|出发城市|到达城市| 出发日期 |出发时间|到达时间|票价|剩余票数| 航空公司    \n");
-    printf("|------|------|--------|--------|----------|--------|--------|----|--------|-------------\n");
+    printf("┌──────┬──────┬────────┬────────┬──────────┬────────┬────────┬────┬────────┬─────────────┐\n");
+    printf("│航班ID│航班号│出发城市│到达城市│ 出发日期 │出发时间│到达时间│票价│剩余票数│ 航空公司    │\n");
+    printf("├┄┄┄┄┄┄┼┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┄┤\n");
     for (int i = 0; i < length; i++)
-        printf("|  %4d|%6s|%8s|%8s|%10s|%8s|%8s|%4d|%8d|%-14s\n",
+        printf("│  %4d│%6s│%8s│%8s│%10s│%8s│%8s│%4d│%8d│%-13s│\n",
                flights_p->flights[list[i]].flight_id,
                flights_p->flights[list[i]].no,
                flights_p->flights[list[i]].dep_city,
@@ -177,15 +178,17 @@ void Print_Flights(Flights *flights_p, int *list, int length)
                flights_p->flights[list[i]].price,
                flights_p->flights[list[i]].remain,
                flights_p->flights[list[i]].carrier);
+    printf("└──────┴──────┴────────┴────────┴──────────┴────────┴────────┴────┴────────┴─────────────┘\n");
 }
 
 // 打印订单信息列表
 void Print_Orders(Orders *orders_p, int *list, int length)
 {
-    printf("| 订票时间 | 订单号 |航班ID|  联系电话  |乘客姓名|乘客类型|     证件号码\n");
-    printf("|----------|--------|------|------------|--------|--------|-------------------\n");
+    printf("┌──────────┬────────┬──────┬────────────┬────────┬────────┬──────────────────┐\n");
+    printf("│ 订票时间 │ 订单号 │航班ID│  联系电话  │乘客姓名│乘客类型│     证件号码     │\n");
+    printf("├┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤\n");
     for (int i = 0; i < length; i++)
-        printf("|%10s|%8d|  %4d| %11s|  %6s|    %4s|%s\n",
+        printf("│%10s│%8d│  %4d│ %11s│  %6s│    %4s│%18s│\n",
                orders_p->orders[list[i]].date,
                orders_p->orders[list[i]].id,
                orders_p->orders[list[i]].flight_id,
@@ -193,17 +196,21 @@ void Print_Orders(Orders *orders_p, int *list, int length)
                orders_p->orders[list[i]].name,
                orders_p->orders[list[i]].type,
                orders_p->orders[list[i]].card_id);
+    printf("└──────────┴────────┴──────┴────────────┴────────┴────────┴──────────────────┘\n");
 }
 
+// 打印反馈信息列表
 void Print_Feedbacks(Feedbacks *feedbacks_p)
 {
-    printf("| 反馈日期 | 姓名 |     联系方式     |航班ID| 反馈内容\n");
-    printf("|----------|------|------------------|------|----------------\n");
+    printf("┌──────────┬──────┬──────────────────┬──────┬────────────────────────\n");
+    printf("│ 反馈日期 │ 姓名 │     联系方式     │航班ID│ 反馈内容\n");
+    printf("├┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n");
     for (int i = 0; i < feedbacks_p->length; i++)
-        printf("|%10s|%6s|%18s|%6s|%s\n",
+        printf("│%10s│%6s│%18s│%6s│%s\n",
                feedbacks_p->feedbacks[i].date,
                feedbacks_p->feedbacks[i].name,
                feedbacks_p->feedbacks[i].contact,
                feedbacks_p->feedbacks[i].no,
                feedbacks_p->feedbacks[i].content);
+    printf("└──────────┴──────┴──────────────────┴──────┴────────────────────────\n");
 }

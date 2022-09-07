@@ -1,4 +1,5 @@
 #include "aircraft.h"
+#include "password.h"
 
 // 新增航班
 void Add_Flight(Flights *flights_p)
@@ -28,7 +29,7 @@ void Add_Flight(Flights *flights_p)
     Open_Flights(flights_p, WRITE);
 }
 
-// 取消航班
+// 修改/取消航班
 void Modify_Flight(Flights *flights_p, int type)
 {
     int i, input_id;
@@ -63,10 +64,10 @@ void Modify_Flight(Flights *flights_p, int type)
     Open_Flights(flights_p, WRITE);
 }
 
-//管理员登录
+// 管理员登录
 int Admin_Login()
 {
-    char password[20], encrypted[20], key;
+    char password[20], encrypted[70] = {}, local_pswd[70], key;
 
     // 打开文件
     FILE *fp;
@@ -75,24 +76,20 @@ int Admin_Login()
         printf("文件打开失败！\n");
         exit(0);
     }
-    fscanf(fp, "%s", encrypted);
+    fscanf(fp, "%s", local_pswd);
     fclose(fp);
 
     // 接收
-    printf("-> 请输入管理员密码：");
+    printf("├-> 请输入管理员密码：");
     for (int i = 0; (key = getch()) != '\r'; i++)
     {
-        if (key >= 'A' && key <= 'Z')
-            password[i] = ((key - 'A') + MOVE) % 26 + 'A';
-        else if (key >= 'a' && key <= 'z')
-            password[i] = ((key - 'a') + MOVE) % 26 + 'a';
-        else
-            password[i] = key;
+        password[i] = key;
         putchar('*');
     }
+    sha256_encrypt(password, encrypted, strlen(password));
 
     // 比对
-    if (strcmp(password, encrypted) == 0)
+    if (strcmp(encrypted, local_pswd) == 0)
     {
         printf("\n验证成功！\n");
         return PASSED;
@@ -101,19 +98,19 @@ int Admin_Login()
     return FAILED;
 }
 
-// 【主要】航班菜单
+// 【主要】管理菜单
 void Adjust(Flights *flights_p, Feedbacks *feedbacks_p)
 {
     if (Admin_Login() == FAILED)
         return;
     int choose;
-    printf("| 1.增加航班             |\n");
-    printf("| 2.取消航班             |\n");
-    printf("| 3.改动航班信息         |\n");
-    printf("| 4.查看反馈信息         |\n");
-    printf("-> 请选择要执行的功能：");
+    printf("│ 1.增加航班             │\n");
+    printf("│ 2.取消航班             │\n");
+    printf("│ 3.改动航班信息         │\n");
+    printf("│ 4.查看反馈信息         │\n");
+    printf("├-> 请选择要执行的功能：");
     scanf("%d", &choose);
-    printf(" ------------------------\n");
+    printf("└────────────────────────┘\n");
     switch (choose)
     {
     case 1:
